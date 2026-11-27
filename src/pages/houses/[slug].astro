@@ -1,0 +1,125 @@
+---
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import HouseCard from "../../components/HouseCard.astro";
+import { houses, type House } from "../../data/houses";
+import { photo } from "../../data/photos";
+export function getStaticPaths() { return houses.map((h) => ({ params: { slug: h.slug }, props: { h } })); }
+const { h } = Astro.props as { h: House };
+const base = import.meta.env.BASE_URL;
+const others = houses.filter((x) => x.slug !== h.slug && x.range === h.range).slice(0, 3);
+const story = (await getCollection("journal")).find((s) => s.data.stay === h.slug);
+---
+<Base title={`${h.name}, ${h.area}`} description={h.line} over>
+  <section class="hh dark">
+    <div class="hh-img" data-parallax="10"><Image src={photo(h.cover)} alt={`${h.name}, ${h.area}`} widths={[900, 1500, 2000]} sizes="100vw" loading="eager" fetchpriority="high" /></div>
+    <div class="wrap hh-copy">
+      <p class="label" data-fade data-now>{h.area}, {h.country}</p>
+      <h1 data-lines data-now>{h.name}</h1>
+    </div>
+  </section>
+
+  <section class="facts dark" aria-label="Key facts">
+    <div class="wrap fbar">
+      <div><span class="label">Altitude</span><strong>{h.altitude.toLocaleString("en-GB")} m</strong></div>
+      <div><span class="label">Size</span><strong>{h.rooms} {h.unit}</strong></div>
+      <div><span class="label">Getting there</span><strong class="sm">{h.arrive}</strong></div>
+      <div><span class="label">From</span><strong>€{h.fromEUR}<small> / night</small></strong></div>
+      <a class="btn on-dark" href="#dates">Find dates <span class="arr">↓</span></a>
+    </div>
+  </section>
+
+  <section class="wrap intro">
+    <p class="lede-xl" data-fade>{h.line}</p>
+    <p class="story" data-fade>{h.story}</p>
+  </section>
+
+  <section class="wrap mosaic">
+    <div class="m1 frame" data-wipe><Image src={photo(h.gallery[1])} alt="" widths={[700, 1100]} sizes="(max-width: 900px) 92vw, 58vw" /></div>
+    <div class="m2 frame" data-wipe><Image src={photo(h.gallery[2])} alt="" widths={[500, 800]} sizes="(max-width: 900px) 92vw, 34vw" /></div>
+    <div class="m3 frame" data-wipe><Image src={photo(h.gallery[3])} alt="" widths={[500, 800]} sizes="(max-width: 900px) 92vw, 34vw" /></div>
+  </section>
+
+  <section class="wrap day">
+    <h2 data-lines>A day <span class="serif-it">at</span> {h.name}</h2>
+    <ol>{h.days.map((d) => <li data-fade><span class="t">{d.t}</span><span class="d">{d.d}</span></li>)}</ol>
+  </section>
+
+  <section class="book dark" id="dates">
+    <div class="wrap bk">
+      <div>
+        <p class="label">Find dates</p>
+        <h2>{h.name}</h2>
+        <p class="muted">From €{h.fromEUR} a night with breakfast and sauna. Free changes up to 21 days before arrival.</p>
+      </div>
+      <form onsubmit="event.preventDefault(); this.querySelector('.note').hidden=false">
+        <label><span class="label">Arrive</span><input type="date" required /></label>
+        <label><span class="label">Nights</span><select><option>2</option><option selected>3</option><option>4</option><option>7</option></select></label>
+        <label><span class="label">Guests</span><select><option>1</option><option selected>2</option><option>3</option><option>4</option></select></label>
+        <button class="btn" type="submit">Check dates <span class="arr">→</span></button>
+        <p class="note" hidden>Concept site: no booking is made.</p>
+      </form>
+    </div>
+  </section>
+
+  {story && (
+    <section class="wrap related-story">
+      <a href={`${base}journal/${story.id}/`} data-cursor="Read">
+        <div class="frame"><Image src={photo(story.data.cover)} alt="" widths={[600, 900]} sizes="(max-width: 900px) 92vw, 40vw" /></div>
+        <div><p class="label">Read before you go</p><h3>{story.data.title}</h3><p class="muted">{story.data.dek}</p></div>
+      </a>
+    </section>
+  )}
+
+  <section class="wrap more">
+    <h2 data-lines>More in the {h.range === "Alps" ? "Alps" : "North"}</h2>
+    <div class="g3">{others.map((o) => <HouseCard house={o} />)}</div>
+  </section>
+
+  <a class="mfab btn" href="#dates">Find dates · €{h.fromEUR}</a>
+</Base>
+
+<style>
+  .hh { position: relative; height: 92svh; min-height: 560px; overflow: hidden; display: flex; align-items: flex-end; }
+  .hh-img { position: absolute; inset: -6% 0; } .hh-img :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .hh::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18,24,21,.55), rgba(18,24,21,0) 30%, rgba(18,24,21,.1) 55%, rgba(18,24,21,.85)); }
+  .hh-copy { position: relative; z-index: 2; padding-bottom: 40px; } .hh-copy .label { color: var(--ember-lt); }
+  .hh h1 { font-size: clamp(44px, 9vw, 160px); margin-top: 12px; }
+  .facts { border-top: 1px solid var(--line-dk); }
+  .fbar { display: grid; grid-template-columns: repeat(4, 1fr) auto; gap: 24px; align-items: center; padding-top: 22px; padding-bottom: 22px; }
+  .fbar div { display: flex; flex-direction: column; gap: 6px; } .fbar .label { color: var(--on-dark-2); }
+  .fbar strong { font-family: var(--f-display); font-stretch: 112%; font-size: 22px; font-weight: 600; } .fbar strong.sm { font-size: 15px; font-family: var(--f-serif); font-weight: 400; font-style: italic; }
+  .fbar small { font-size: 13px; font-weight: 400; }
+  .intro { display: grid; grid-template-columns: 1.2fr 1fr; gap: clamp(32px, 6vw, 96px); padding-top: clamp(80px, 10vw, 150px); padding-bottom: clamp(56px, 7vw, 100px); align-items: end; }
+  .lede-xl { font-size: clamp(28px, 3.2vw, 48px); line-height: 1.12; margin: 0; letter-spacing: -.01em; }
+  .story { margin: 0; color: var(--ink-2); }
+  .mosaic { display: grid; grid-template-columns: 1.7fr 1fr; grid-template-rows: 1fr 1fr; gap: 16px; height: min(90vh, 920px); }
+  .m1 { grid-row: span 2; }
+  .day { padding-top: clamp(80px, 10vw, 150px); padding-bottom: clamp(80px, 10vw, 150px); }
+  .day h2 { margin-bottom: 40px; }
+  .day ol { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .day li { border-top: 2px solid var(--pine); padding-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .t { font-family: var(--f-display); font-stretch: 125%; font-weight: 700; font-size: 40px; color: var(--ember); line-height: 1; } .d { font-size: 18px; }
+  .book { padding: clamp(64px, 8vw, 110px) 0; }
+  .bk { display: grid; grid-template-columns: 1fr 1.3fr; gap: 48px; align-items: end; } .bk h2 { margin: 10px 0 14px; } .bk .label { color: var(--ember-lt); }
+  .bk form { display: grid; grid-template-columns: 1fr .7fr .7fr auto; border: 1px solid var(--line-dk); }
+  .bk label { display: flex; flex-direction: column; gap: 4px; padding: 12px 16px; border-right: 1px solid var(--line-dk); } .bk label .label { color: var(--on-dark-2); }
+  .bk input, .bk select { background: transparent; border: 0; color: var(--snow); font-size: 17px; padding: 2px 0; color-scheme: dark; min-width: 0; }
+  .bk select option { color: var(--pine); }
+  .bk .btn { justify-content: center; } .note { grid-column: 1 / -1; margin: 0; padding: 10px 16px; color: var(--ember-lt); }
+  .related-story { padding-top: clamp(80px, 10vw, 140px); }
+  .related-story a { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; text-decoration: none; }
+  .related-story .frame { aspect-ratio: 3 / 2; } .related-story .label { color: var(--ember); } .related-story h3 { font-size: clamp(26px, 2.6vw, 40px); margin: 10px 0; }
+  .more { padding-top: clamp(80px, 10vw, 140px); padding-bottom: clamp(80px, 10vw, 140px); } .more h2 { margin-bottom: 40px; }
+  .g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .mfab { display: none; }
+  @media (max-width: 900px) {
+    .fbar { grid-template-columns: 1fr 1fr; } .fbar .btn { grid-column: 1 / -1; justify-content: center; }
+    .intro, .bk, .related-story a, .g3 { grid-template-columns: 1fr; }
+    .mosaic { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; height: auto; } .m1 { grid-column: 1 / -1; grid-row: auto; aspect-ratio: 4 / 3; } .m2, .m3 { aspect-ratio: 3 / 4; }
+    .day ol { grid-template-columns: 1fr 1fr; }
+    .bk form { grid-template-columns: 1fr 1fr; } .bk label { border-bottom: 1px solid var(--line-dk); } .bk label:first-child { grid-column: 1 / -1; } .bk .btn { grid-column: 1 / -1; padding: 18px; }
+    .mfab { display: flex; justify-content: center; position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 40; box-shadow: 0 10px 30px rgba(0,0,0,.3); }
+  }
+</style>

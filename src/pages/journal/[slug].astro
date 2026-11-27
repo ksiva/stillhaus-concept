@@ -1,0 +1,85 @@
+---
+import { Image } from "astro:assets";
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { bySlug } from "../../data/houses";
+import { photo } from "../../data/photos";
+export async function getStaticPaths() {
+  const all = await getCollection("journal");
+  return all.map((s) => ({ params: { slug: s.id }, props: { s, all } }));
+}
+const { s, all } = Astro.props;
+const { Content } = await render(s);
+const base = import.meta.env.BASE_URL;
+const stay = bySlug(s.data.stay);
+const next = all.filter((x) => x.id !== s.id);
+const date = new Date(s.data.date).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
+---
+<Base title={s.data.title} description={s.data.dek} over>
+  <article>
+    <header class="ah dark">
+      <div class="ah-img" data-parallax="10"><Image src={photo(s.data.cover)} alt="" widths={[900, 1500, 2000]} sizes="100vw" loading="eager" /></div>
+      <div class="wrap ah-copy">
+        <p class="label" data-fade data-now>{s.data.kicker}</p>
+        <h1 data-lines data-now>{s.data.title}</h1>
+        <div class="ah-meta" data-fade data-now><p class="dek">{s.data.dek}</p><p class="by label">{date} · {s.data.minutes} min read</p></div>
+      </div>
+    </header>
+
+    <div class="wrap body">
+      <div class="prose"><Content /></div>
+    </div>
+
+    <div class="wrap pair">
+      {s.data.inline.map((n, i) => <figure class:list={["frame", `f${i}`]} data-wipe><Image src={photo(n)} alt="" widths={[700, 1100]} sizes="(max-width: 900px) 92vw, 50vw" /></figure>)}
+    </div>
+
+    <section class="stay dark">
+      <a class="wrap st" href={`${base}houses/${stay.slug}/`} data-cursor="Enter">
+        <div class="frame"><Image src={photo(stay.cover)} alt={stay.name} widths={[600, 900]} sizes="(max-width: 900px) 92vw, 40vw" /></div>
+        <div>
+          <p class="label">Where to stay</p>
+          <h2>{stay.name}</h2>
+          <p class="muted">{stay.line}</p>
+          <span class="btn on-dark">Find dates from €{stay.fromEUR} <span class="arr">→</span></span>
+        </div>
+      </a>
+    </section>
+  </article>
+
+  <section class="wrap next">
+    <p class="label">Next</p>
+    <ul>{next.map((n) => <li><a href={`${base}journal/${n.id}/`}><span class="nt">{n.data.title}</span><span class="nk">{n.data.kicker}</span><span class="arr">→</span></a></li>)}</ul>
+  </section>
+</Base>
+
+<style>
+  .ah { position: relative; min-height: 88svh; display: flex; align-items: flex-end; overflow: hidden; }
+  .ah-img { position: absolute; inset: -6% 0; } .ah-img :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .ah::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18,24,21,.6), rgba(18,24,21,.1) 35%, rgba(18,24,21,.9)); }
+  .ah-copy { position: relative; z-index: 2; padding-bottom: 48px; padding-top: 160px; } .ah-copy .label { color: var(--ember-lt); }
+  .ah h1 { font-size: clamp(40px, 6.6vw, 116px); max-width: 16ch; margin: 14px 0 28px; }
+  .ah-meta { display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; border-top: 1px solid var(--line-dk); padding-top: 18px; }
+  .dek { font-style: italic; font-size: clamp(20px, 1.8vw, 26px); margin: 0; max-width: 40ch; } .by { color: var(--on-dark-2); margin: 0; }
+  .body { padding-top: clamp(64px, 8vw, 120px); padding-bottom: 56px; }
+  .prose { max-width: 700px; margin: 0 auto; font-size: 21px; line-height: 1.65; }
+  .prose :global(p:first-of-type) { font-size: 1.25em; line-height: 1.45; }
+  .prose :global(h2) { font-size: clamp(24px, 2.2vw, 32px); margin: 56px 0 14px; letter-spacing: 0; }
+  .prose :global(blockquote) { margin: 56px -10vw; padding: 0; font-family: var(--f-display); font-stretch: 125%; font-weight: 700; text-transform: uppercase; font-size: clamp(28px, 3.6vw, 56px); line-height: .98; letter-spacing: -.01em; color: var(--ember); text-align: center; }
+  .prose :global(blockquote p) { margin: 0; font-size: inherit !important; line-height: inherit !important; }
+  .pair { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; align-items: end; } .pair figure { margin: 0; } .f0 { aspect-ratio: 4 / 3; } .f1 { aspect-ratio: 3 / 4; }
+  .stay { margin-top: clamp(80px, 10vw, 140px); padding: clamp(56px, 7vw, 96px) 0; }
+  .st { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 80px); align-items: center; text-decoration: none; }
+  .st .frame { aspect-ratio: 4 / 3; } .st .label { color: var(--ember-lt); } .st h2 { margin: 10px 0 16px; } .st .muted { margin: 0 0 28px; }
+  .st :global(img) { transition: transform 1.4s var(--ease-out); } .st:hover :global(img) { transform: scale(1.05); }
+  .next { padding-top: clamp(72px, 9vw, 120px); padding-bottom: clamp(72px, 9vw, 120px); } .next .label { color: var(--ember); }
+  .next ul { list-style: none; padding: 0; margin: 16px 0 0; border-top: 2px solid var(--pine); }
+  .next a { display: grid; grid-template-columns: 1fr auto auto; gap: 24px; align-items: center; padding: 22px 0; border-bottom: 1px solid var(--line); text-decoration: none; transition: padding .6s var(--ease-out); }
+  .next a:hover { padding-left: 18px; color: var(--ember); }
+  .nt { font-family: var(--f-display); font-stretch: 125%; font-weight: 700; text-transform: uppercase; font-size: clamp(20px, 2.4vw, 36px); line-height: 1; }
+  .nk { font-style: italic; color: var(--ink-3); }
+  @media (max-width: 900px) {
+    .prose :global(blockquote) { margin: 40px 0; text-align: left; }
+    .pair, .st { grid-template-columns: 1fr; } .next a { grid-template-columns: 1fr auto; } .nk { display: none; }
+  }
+</style>

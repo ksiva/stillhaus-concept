@@ -1,0 +1,113 @@
+---
+import "@fontsource-variable/archivo/wdth.css";
+import "@fontsource-variable/newsreader/opsz.css";
+import "@fontsource-variable/newsreader/opsz-italic.css";
+import "../../styles/global.css";
+import { getImage } from "astro:assets";
+import Logo from "../../components/Logo.astro";
+import { ads, type Ad } from "../../data/ads";
+import { photo } from "../../data/photos";
+export function getStaticPaths() { return ads.map((a) => ({ params: { id: a.id }, props: { a } })); }
+const { a } = Astro.props as { a: Ad };
+const pick: Record<string, number> = { "feed-offer": 6, "feed-hotel": 60, "story-offer": 5, mpu: 6, leader: 30, sky: 10, half: 6, "email-header": 88 };
+const img = await getImage({ src: photo(pick[a.id]), width: Math.min(2000, Math.max(a.w, a.h) * 2), format: "jpg", quality: 82 });
+---
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8" /><meta name="robots" content="noindex" /><title>{a.label} — Stillhaus</title></head>
+<body class="adpage">
+  <div class={`ad ${a.id} k-${a.kind} ${a.kind === "display" ? "anim" : ""}`} style={`width:${a.w}px;height:${a.h}px`}>
+    <div class="bg" style={`background-image:url(${img.src})`}></div>
+
+    {a.id === "feed-offer" && (<>
+      <div class="shade"></div>
+      <div class="lg"><Logo size={54} /></div>
+      <div class="cp">
+        <p class="tag">The Still Week · Jan to Mar</p>
+        <h1>Seven nights.<br />Pay for six.</h1>
+        <p class="sub">Four quiet houses in the Alps and the North. Sauna every evening.</p>
+        <span class="cta">Pick a house →</span>
+      </div>
+    </>)}
+
+    {a.id === "feed-hotel" && (<>
+      <div class="shade"></div>
+      <div class="lg"><Logo size={54} /></div>
+      <div class="cp">
+        <p class="tag">Lofoten, Norway · 12 rooms</p>
+        <h1>Nattlys</h1>
+        <p class="sub">A red fisherman's house above a quiet bay. We knock when the aurora comes out.</p>
+        <div class="row"><span class="cta">Find dates →</span><span class="from">From €290 a night</span></div>
+      </div>
+    </>)}
+
+    {a.id === "story-offer" && (<>
+      <div class="shade"></div>
+      <div class="lg"><Logo size={60} /></div>
+      <div class="cp">
+        <p class="tag">January to March</p>
+        <h1>The<br />Still<br />Week</h1>
+        <p class="sub">Seven nights, <em>pay for six.</em> Sauna every evening at four quiet houses.</p>
+        <span class="cta">Pick a house</span>
+      </div>
+    </>)}
+
+    {a.id === "mpu" && (<>
+      <div class="shade"></div>
+      <div class="d-lg"><Logo size={18} /></div>
+      <div class="d-cp"><h1 class="l1">7 nights.</h1><h1 class="l2">Pay for 6.</h1><span class="cta">Pick a house →</span></div>
+    </>)}
+
+    {a.id === "leader" && (<>
+      <div class="lb"><Logo size={24} withWord={false} /><div class="lbt"><h1 class="l1">7 nights. Pay for 6.</h1><p class="l2">The Still Week · sauna every evening</p></div><span class="cta">Pick a house →</span></div>
+    </>)}
+
+    {(a.id === "sky" || a.id === "half") && (<>
+      <div class="shade"></div>
+      <div class="d-lg"><Logo size={a.id === "sky" ? 18 : 22} withWord={a.id !== "sky"} /></div>
+      <div class="d-cp"><p class="tag l1">Jan to Mar</p><h1 class="l2">The Still Week</h1><p class="l3">Seven nights, <em>pay for six.</em></p><span class="cta">{a.id === "sky" ? "Pick a house" : "Pick a house →"}</span></div>
+    </>)}
+
+    {a.id === "email-header" && (<>
+      <div class="shade"></div>
+      <div class="e-lg"><Logo size={26} /></div>
+      <div class="e-cp"><p class="tag">Letters from the houses · December</p><h1>The Still Week<br />is open.</h1></div>
+    </>)}
+  </div>
+</body></html>
+
+<style is:global>
+  body.adpage { margin: 0; background: #ccc; overflow: hidden; }
+  .ad { position: relative; overflow: hidden; color: var(--snow); }
+  .ad .bg { position: absolute; inset: 0; background-size: cover; background-position: center; }
+  .ad .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18,24,21,.55) 0%, rgba(18,24,21,.1) 25%, rgba(18,24,21,.5) 45%, rgba(18,24,21,.95) 100%); }
+  .ad .shade ~ * .tag { color: var(--snow); opacity: .9; }
+  .ad h1 { font-family: var(--f-display); font-stretch: 125%; font-weight: 800; text-transform: uppercase; line-height: .9; letter-spacing: -.02em; margin: 0; }
+  .ad em { font-family: var(--f-serif); font-style: italic; }
+  .ad .tag { font-family: var(--f-display); font-stretch: 112%; font-weight: 600; text-transform: uppercase; letter-spacing: .16em; color: var(--ember-lt); margin: 0; }
+  .ad .cta { display: inline-block; background: var(--ember-lt); color: var(--pine); font-family: var(--f-display); font-stretch: 112%; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; }
+  .ad .sub { font-family: var(--f-serif); margin: 0; }
+  .ad .lg { position: absolute; top: 60px; left: 64px; } .ad .lg .word { font-size: 30px; }
+  .k-feed .cp, .k-story .cp { position: absolute; left: 64px; right: 64px; bottom: 72px; }
+  .k-feed .tag { font-size: 24px; margin-bottom: 26px; } .k-feed h1 { font-size: 128px; } .k-feed .sub { font-size: 36px; line-height: 1.3; margin: 30px 0 40px; max-width: 24ch; }
+  .k-feed .cta { font-size: 26px; padding: 24px 34px; } .row { display: flex; gap: 30px; align-items: center; } .from { font-family: var(--f-display); font-stretch: 112%; font-size: 26px; font-weight: 600; letter-spacing: .06em; }
+  .feed-hotel h1 { font-size: 150px; }
+  .k-story .lg { top: 90px; left: 80px; } .k-story .cp { left: 80px; bottom: 140px; }
+  .k-story .tag { font-size: 28px; margin-bottom: 30px; } .k-story h1 { font-size: 210px; } .k-story .sub { font-size: 44px; line-height: 1.25; margin: 40px 0 52px; }
+  .k-story .cta { font-size: 30px; padding: 28px 40px; }
+  .k-display .cta { font-size: 11px; padding: 8px 11px; } .k-display .d-lg { position: absolute; top: 12px; left: 12px; } .k-display .word { font-size: 11px; }
+  .mpu .d-cp { position: absolute; left: 14px; right: 14px; bottom: 14px; } .mpu h1 { font-size: 36px; } .mpu .cta { margin-top: 12px; }
+  .leader { background: var(--pine); } .leader .bg { left: auto; width: 220px; }
+  .leader .lb { position: absolute; inset: 0 220px 0 0; display: flex; align-items: center; gap: 18px; padding: 0 18px; }
+  .lbt { flex: 1; min-width: 0; } .leader h1 { font-size: 19px; white-space: nowrap; } .leader .l2 { font-family: var(--f-serif); font-style: italic; font-size: 13px; margin: 4px 0 0; color: var(--fog); } .leader .cta { white-space: nowrap; }
+  .sky .d-cp, .half .d-cp { position: absolute; left: 14px; right: 14px; bottom: 18px; }
+  .sky .tag, .half .tag { font-size: 11px; margin-bottom: 10px; } .sky h1 { font-size: 30px; } .half h1 { font-size: 50px; }
+  .sky .l3, .half .l3 { font-family: var(--f-serif); font-size: 16px; margin: 10px 0 14px; } .half .l3 { font-size: 22px; }
+  .email-header .e-lg { position: absolute; top: 22px; left: 26px; } .email-header .word { font-size: 14px; }
+  .email-header .e-cp { position: absolute; left: 26px; bottom: 26px; } .email-header .tag { font-size: 11px; margin-bottom: 10px; } .email-header h1 { font-size: 46px; }
+  .email-header .shade { background: linear-gradient(90deg, rgba(18,24,21,.85), rgba(18,24,21,.4) 60%, rgba(18,24,21,.15)); }
+  .anim .bg { animation: kb 12s ease-out infinite alternate; }
+  .anim .l1, .anim .l2, .anim .l3, .anim .cta { animation: rise 1s cubic-bezier(.16,1,.3,1) both; }
+  .anim .l2 { animation-delay: .35s; } .anim .l3 { animation-delay: .6s; } .anim .cta { animation-delay: .9s; }
+  @keyframes kb { from { transform: scale(1.12); } to { transform: scale(1); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+</style>

@@ -1,0 +1,23 @@
+---
+import Base from "../layouts/Base.astro";
+import credits from "../data/credits.json";
+---
+<Base title="Credits" description="Photo sources and licences for this concept site.">
+  <section class="wrap c">
+    <h1>Credits</h1>
+    <p class="lede">Stillhaus is a concept brand made as a portfolio piece. Every house, price and story is invented. The photographs are stock and do not show the houses named.</p>
+    <h2>Photography</h2>
+    <p>All photographs come from <a href="https://unsplash.com">Unsplash</a> and are used under the <a href="https://unsplash.com/license">Unsplash License</a> (free for commercial use). Source page for each file:</p>
+    <ol class="list">{credits.map((c: any) => <li><a href={c.source}>{c.source.replace("https://", "")}</a> <span class="muted">({c.file})</span></li>)}</ol>
+    <h2>Type</h2>
+    <p>Archivo (Omnibus-Type) and Newsreader (Production Type), both under the SIL Open Font License, self-hosted via Fontsource.</p>
+    <h2>Code</h2>
+    <p>Built with Astro (MIT) and GSAP (Standard no-charge licence).</p>
+  </section>
+</Base>
+<style>
+  .c { padding-top: 80px; padding-bottom: 120px; max-width: 900px; }
+  .c h2 { font-size: 30px; margin: 48px 0 12px; }
+  .list { columns: 2; font-size: 15px; } .list a { word-break: break-all; }
+  @media (max-width: 700px) { .list { columns: 1; } }
+</style>

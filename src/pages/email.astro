@@ -1,0 +1,61 @@
+---
+// Email campaign template: table layout, inline styles, 600 px, web-safe fallbacks.
+import { getImage } from "astro:assets";
+import { bySlug } from "../data/houses";
+import { photo } from "../data/photos";
+const base = import.meta.env.BASE_URL;
+const site = "https://ksiva.github.io" + base;
+const picks = ["granhus", "nattlys", "sjostuga-tyst", "huette-zwoelf"].map(bySlug);
+const imgs = await Promise.all(picks.map((h) => getImage({ src: photo(h.cover), width: 540, height: 400, fit: "cover", format: "jpg", quality: 78 })));
+const disp = "'Archivo', 'Arial Black', Arial, sans-serif";
+const serif = "'Newsreader', Georgia, 'Times New Roman', serif";
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width" /><meta name="robots" content="noindex" />
+  <title>Letters from the houses · Email template (concept)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,700;125,800&family=Newsreader:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+</head>
+<body style="margin:0;padding:0;background:#121815;">
+  <div style="display:none;max-height:0;overflow:hidden;">Seven nights, pay for six. Sauna every evening, January to March.</div>
+  <p style="margin:0;padding:10px;text-align:center;font:12px/1.4 Helvetica,Arial,sans-serif;color:#b9bdb2;">Concept email template · fictional brand · <a href={base} style="color:#b9bdb2;">back to site</a></p>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#121815;">
+    <tr><td align="center" style="padding:12px 12px 40px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#ededE7;">
+        <tr><td><img src={`${base}campaign/email-header.png`} width="600" alt="Stillhaus · The Still Week is open." style="display:block;width:100%;height:auto;border:0;" /></td></tr>
+        <tr><td style={`padding:40px 40px 8px;font-family:${serif};font-size:18px;line-height:1.6;color:#1c2621;`}>
+          <p style="margin:0 0 16px;">The days are short and the saunas are hot. From January to March, stay seven nights at one of four houses and the seventh is on us.</p>
+          <p style="margin:0;">A week is how long it takes to stop checking the time. We'll send door-to-door directions, and someone will meet the last connection.</p>
+        </td></tr>
+        <tr><td style="padding:28px 40px 36px;">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td style="background:#a64f20;">
+            <a href={`${site}offers/the-still-week/`} style={`display:inline-block;padding:16px 26px;font-family:${disp};font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ededE7;text-decoration:none;`}>Pick a house →</a>
+          </td></tr></table>
+        </td></tr>
+        <tr><td style="padding:0 28px 12px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+            {[0, 2].map((r) => (
+              <tr>
+                {[r, r + 1].map((i) => (
+                  <td width="50%" valign="top" style="padding:0 12px 28px;">
+                    <a href={`${site}houses/${picks[i].slug}/`}><img src={imgs[i].src} width="258" alt={`${picks[i].name}, ${picks[i].area}`} style="display:block;width:100%;height:auto;border:0;" /></a>
+                    <p style={`margin:14px 0 4px;font-family:${disp};font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:-0.3px;color:#1c2621;`}>{picks[i].name}</p>
+                    <p style={`margin:0 0 8px;font-family:${serif};font-style:italic;font-size:15px;color:#3c4640;`}>{picks[i].area}, {picks[i].country}</p>
+                    <p style={`margin:0;font-family:${disp};font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#a64f20;`}>7 nights from €{picks[i].fromEUR * 6}</p>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </table>
+        </td></tr>
+        <tr><td style={`background:#1c2621;padding:32px 40px;font-family:${serif};font-size:14px;line-height:1.6;color:#b9bdb2;`}>
+          <p style={`margin:0 0 10px;font-family:${disp};font-weight:800;letter-spacing:4px;text-transform:uppercase;font-size:14px;color:#ededE7;`}>Stillhaus</p>
+          <p style="margin:0;">Quiet houses in the Alps and the North. You receive this because you signed up for letters from the houses. <a href="#" style="color:#ededE7;">Unsubscribe</a> · <a href="#" style="color:#ededE7;">View in browser</a></p>
+          <p style="margin:12px 0 0;color:#8b8e86;">Concept / spec work. Fictional brand.</p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>

@@ -1,0 +1,149 @@
+---
+import { Image } from "astro:assets";
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import HouseCard from "../components/HouseCard.astro";
+import { houses } from "../data/houses";
+import { photo } from "../data/photos";
+const base = import.meta.env.BASE_URL;
+const stories = (await getCollection("journal")).sort((a, b) => b.data.date.localeCompare(a.data.date));
+const rituals = [
+  { name: "Sauna", note: "Wood-fired, lakeside, in a hayloft. Every house has one.", img: 29, n: houses.filter((h) => h.rituals.includes("Sauna")).length },
+  { name: "Fire", note: "A stove in the room and someone to light it at five.", img: 49, n: houses.length },
+  { name: "Lake", note: "A jetty, a rowing boat, the first swim before breakfast.", img: 22, n: houses.filter((h) => h.rituals.includes("Lake") || h.rituals.includes("Sea")).length },
+  { name: "Northern lights", note: "North-facing glass and a knock on the door when the sky moves.", img: 8, n: houses.filter((h) => h.rituals.includes("Northern lights")).length },
+  { name: "Hiking", note: "Trails that start at the gate, lunch at the hut.", img: 78, n: houses.filter((h) => h.rituals.includes("Hiking")).length },
+];
+---
+<Base over>
+  <section class="win dark" data-window>
+    <div class="pane"><Image src={photo(88)} alt="A window onto snowy peaks from a warm room" widths={[900, 1500, 2000]} sizes="100vw" loading="eager" fetchpriority="high" /></div>
+    <div class="wrap hero-text">
+      <p class="label" data-fade data-now>Seven houses · the Alps and the North</p>
+      <h1 class="bigword" data-lines data-now>Quiet houses <span class="serif-it">for the</span> cold months</h1>
+    </div>
+    <div class="wrap after">
+      <p class="lede">Small houses in the mountains and by northern water, each with a sauna, a stove and no more than twelve rooms. Every one is reachable by train or boat.</p>
+      <a class="btn on-dark" href={`${base}houses/`}>See the houses <span class="arr">→</span></a>
+    </div>
+  </section>
+
+  <section class="intro wrap">
+    <p class="statement" data-fade>We look for places where the loudest thing is the stove. Then we stay a week, and only the ones we didn't want to leave make the list.</p>
+    <div class="three">
+      <div data-fade><p class="label">Arrive by rail</p><p>Every house is a bus, boat or short transfer from a station or small airport. Directions come with the booking.</p></div>
+      <div data-fade><p class="label">Twelve rooms at most</p><p>Small enough that the owner knows your name, and the sauna is never crowded.</p></div>
+      <div data-fade><p class="label">A ritual at every house</p><p>Sauna, fire, lake, sky. Each house has one thing it does better than anywhere else.</p></div>
+    </div>
+  </section>
+
+  <section class="strip dark" data-hscroll>
+    <div class="wrap strip-head">
+      <h2 data-lines>The houses</h2>
+      <div class="progress" aria-hidden="true"><i></i></div>
+      <a class="ulink" href={`${base}houses/`}>All {houses.length}, as a list</a>
+    </div>
+    <div class="track">
+      {houses.map((h, i) => <div class="h-card"><HouseCard house={h} eager={i < 2} sizes="(max-width: 900px) 78vw, 30vw" /></div>)}
+    </div>
+  </section>
+
+  <section class="rit wrap" data-rituals>
+    <div class="rit-list">
+      <h2 data-lines>Choose a ritual</h2>
+      <ul>
+        {rituals.map((r, i) => (
+          <li><a href={`${base}houses/?ritual=${encodeURIComponent(r.name)}`} data-r={i} class:list={[{ on: i === 0 }]}>
+            <span class="rn">{r.name}</span><span class="rc">{r.n} houses</span><span class="rd">{r.note}</span>
+          </a></li>
+        ))}
+      </ul>
+    </div>
+    <div class="rit-img frame">
+      {rituals.map((r, i) => <Image class:list={[{ on: i === 0 }]} src={photo(r.img)} alt="" widths={[700, 1100]} sizes="(max-width: 900px) 92vw, 44vw" />)}
+    </div>
+  </section>
+
+  <section class="jr wrap">
+    <div class="jr-head"><h2 data-lines>Journal</h2><a class="ulink" href={`${base}journal/${stories[0].id}/`}>Latest story</a></div>
+    <div class="jr-grid">
+      {stories.map((s, i) => (
+        <a class:list={["st", { big: i === 0 }]} href={`${base}journal/${s.id}/`} data-cursor="Read">
+          <div class="frame" data-wipe><Image src={photo(s.data.cover)} alt="" widths={[600, 1000, 1400]} sizes={i === 0 ? "(max-width: 900px) 92vw, 60vw" : "(max-width: 900px) 92vw, 30vw"} /></div>
+          <p class="label">{s.data.kicker} · {s.data.minutes} min</p>
+          <h3>{s.data.title}</h3>
+          <p class="muted">{s.data.dek}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</Base>
+
+<script>
+  const sec = document.querySelector<HTMLElement>("[data-rituals]");
+  if (sec) {
+    const imgs = sec.querySelectorAll(".rit-img img");
+    const links = sec.querySelectorAll<HTMLElement>("[data-r]");
+    const pick = (i: string) => { imgs.forEach((im, k) => im.classList.toggle("on", String(k) === i)); links.forEach((l) => l.classList.toggle("on", l.dataset.r === i)); };
+    links.forEach((l) => { l.addEventListener("pointerenter", () => pick(l.dataset.r!)); l.addEventListener("focus", () => pick(l.dataset.r!)); });
+  }
+</script>
+
+<style>
+  .win { position: relative; height: 100svh; min-height: 620px; overflow: hidden; }
+  .pane { position: absolute; inset: 0; clip-path: inset(26% 34% 22% 34%); }
+  .pane :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .pane::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(18,24,21,.6), rgba(18,24,21,.15) 55%, rgba(18,24,21,0)), linear-gradient(180deg, rgba(18,24,21,.55), rgba(18,24,21,.1) 35%, rgba(18,24,21,.25) 60%, rgba(18,24,21,.85)); }
+  .hero-text { position: relative; z-index: 2; padding-top: 128px; }
+  .hero-text .label { color: var(--ember-lt); margin: 0 0 18px; }
+  .bigword { font-size: clamp(40px, 7.4vw, 132px); max-width: 12ch; }
+  .bigword .serif-it { font-size: .9em; }
+  .after { position: absolute; left: 0; right: 0; bottom: clamp(28px, 6vh, 64px); z-index: 2; display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; }
+  .after .lede { margin: 0; color: var(--snow); }
+  :global(html:not(.js-motion)) .pane { clip-path: none; }
+  @media (max-width: 900px) { .pane { clip-path: none !important; } :global(html.js-motion) .after { opacity: 1 !important; transform: none !important; } }
+
+  .intro { padding-top: clamp(96px, 12vw, 180px); padding-bottom: clamp(80px, 10vw, 150px); }
+  .statement { font-size: clamp(28px, 3.4vw, 52px); line-height: 1.15; max-width: 26ch; margin: 0 0 clamp(56px, 7vw, 100px); letter-spacing: -.01em; }
+  .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; }
+  .three > div { border-top: 2px solid var(--pine); padding-top: 16px; }
+  .three .label { color: var(--ember); margin: 0 0 10px; } .three p:last-child { margin: 0; color: var(--ink-2); font-size: 18px; }
+
+  .strip { padding: clamp(64px, 8vw, 110px) 0; overflow: hidden; }
+  .strip-head { display: grid; grid-template-columns: auto 1fr auto; gap: 32px; align-items: end; margin-bottom: 48px; }
+  .progress { height: 2px; background: var(--line-dk); margin-bottom: 16px; } .progress i { display: block; height: 100%; background: var(--ember-lt); transform-origin: left; transform: scaleX(0); }
+  .track { display: flex; gap: 28px; padding: 0 var(--gutter); width: max-content; }
+  .h-card { width: clamp(280px, 27vw, 420px); flex: none; }
+  .h-card :global(.ph img) { left: -8% !important; width: 116% !important; max-width: none; }
+
+  .rit { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 80px); padding-top: clamp(96px, 12vw, 170px); align-items: start; }
+  .rit-list h2 { margin-bottom: 36px; }
+  .rit-list ul { list-style: none; padding: 0; margin: 0; border-top: 2px solid var(--pine); }
+  .rit-list a { display: grid; grid-template-columns: 1fr auto; gap: 4px 20px; padding: 18px 0; border-bottom: 1px solid var(--line); text-decoration: none; }
+  .rn { font-family: var(--f-display); font-stretch: 125%; font-weight: 700; text-transform: uppercase; font-size: clamp(24px, 2.6vw, 42px); line-height: 1; color: var(--ink-3); transition: color .4s, letter-spacing .6s var(--ease-out); }
+  .rc { font-family: var(--f-display); font-stretch: 112%; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; align-self: center; }
+  .rd { grid-column: 1 / -1; color: var(--ink-2); max-height: 0; overflow: hidden; opacity: 0; transition: max-height .6s var(--ease), opacity .4s; font-style: italic; }
+  .rit-list a.on .rn { color: var(--pine); letter-spacing: .01em; } .rit-list a.on .rd { max-height: 3em; opacity: 1; }
+  .rit-list a.on .rc { color: var(--ember); }
+  .rit-img { position: sticky; top: 100px; aspect-ratio: 4 / 5; }
+  .rit-img :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.06); transition: opacity .7s var(--ease), transform 1.4s var(--ease-out); }
+  .rit-img :global(img.on) { opacity: 1; transform: none; }
+
+  .jr { padding-top: clamp(96px, 12vw, 170px); padding-bottom: clamp(96px, 12vw, 170px); }
+  .jr-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 40px; }
+  .jr-grid { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto auto; gap: 40px 32px; }
+  .st { text-decoration: none; display: block; } .st.big { grid-row: span 2; }
+  .st .frame { aspect-ratio: 3 / 2; margin-bottom: 16px; } .st.big .frame { aspect-ratio: 4 / 3; }
+  .st .label { color: var(--ember); margin: 0 0 8px; } .st h3 { margin-bottom: 8px; } .st.big h3 { font-size: clamp(28px, 3vw, 46px); }
+  .st :global(img) { transition: transform 1.4s var(--ease-out); } .st:hover :global(img) { transform: scale(1.05); }
+
+  @media (max-width: 900px) {
+    .three, .rit, .jr-grid { grid-template-columns: 1fr; } .st.big { grid-row: auto; }
+    .strip-head { grid-template-columns: 1fr auto; } .progress { display: none; }
+    .track { overflow-x: auto; width: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: none; }
+    .h-card { width: 78vw; scroll-snap-align: start; }
+    .rit-img { position: relative; top: 0; order: -1; aspect-ratio: 4 / 3; }
+    .rd { max-height: none !important; opacity: 1 !important; font-size: 16px; }
+    .rn { color: var(--pine) !important; }
+  }
+</style>

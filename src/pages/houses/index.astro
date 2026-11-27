@@ -1,0 +1,82 @@
+---
+import { Image } from "astro:assets";
+import Base from "../../layouts/Base.astro";
+import { houses, rituals } from "../../data/houses";
+import { photo } from "../../data/photos";
+const base = import.meta.env.BASE_URL;
+const chips = ["Alps", "North", ...rituals.slice(0, 5)];
+---
+<Base title="Houses" description="Every Stillhaus house, by range and ritual.">
+  <section class="head wrap">
+    <p class="label" data-fade data-now>Index</p>
+    <div class="h-row">
+      <h1 data-lines data-now>All the houses</h1>
+      <p class="count"><span data-count>{String(houses.length).padStart(2, "0")}</span><span class="label">houses shown</span></p>
+    </div>
+    <div class="chips" role="toolbar" aria-label="Filter houses">
+      <button data-filter="all" aria-pressed="true">All</button>
+      {chips.map((c) => <button data-filter={c} aria-pressed="false">{c}</button>)}
+    </div>
+  </section>
+
+  <section class="wrap list" data-preview-list data-filter-list>
+    <div class="thead" aria-hidden="true"><span>House</span><span>Where</span><span>Altitude</span><span>Size</span><span>From / night</span></div>
+    {houses.map((h, i) => (
+      <a class="row" href={`${base}houses/${h.slug}/`} data-pv={i} data-tags={[h.range, ...h.rituals].join("|")}>
+        <span class="thumb frame"><Image src={photo(h.cover)} alt="" widths={[300]} sizes="120px" /></span>
+        <span class="nm">{h.name}</span>
+        <span class="wh">{h.area}, {h.country}</span>
+        <span class="num al">{h.altitude.toLocaleString("en-GB")} m</span>
+        <span class="num sz">{h.rooms} {h.unit}</span>
+        <span class="num pr">€{h.fromEUR} <span class="arr">→</span></span>
+      </a>
+    ))}
+    <div class="preview" aria-hidden="true">
+      {houses.map((h) => <Image src={photo(h.gallery[1])} alt="" widths={[500]} sizes="340px" />)}
+    </div>
+  </section>
+
+  <section class="wrap note">
+    <p>Prices are per room per night with breakfast and sauna. Every house can be reached without a car; the directions arrive with your booking.</p>
+  </section>
+</Base>
+
+<script>
+  const p = new URLSearchParams(location.search).get("ritual");
+  if (p) document.querySelector<HTMLButtonElement>(`[data-filter="${CSS.escape(p)}"]`)?.click();
+</script>
+
+<style>
+  .head { padding-top: clamp(56px, 8vw, 110px); }
+  .head .label { color: var(--ember); }
+  .h-row { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin: 14px 0 36px; }
+  .count { display: flex; flex-direction: column; align-items: flex-end; margin: 0; }
+  .count > span:first-child { font-family: var(--f-display); font-stretch: 125%; font-weight: 700; font-size: clamp(56px, 7vw, 110px); line-height: .85; color: var(--ember); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 28px; }
+  .chips button { background: transparent; border: 1px solid var(--line); padding: 9px 14px; cursor: pointer; font-family: var(--f-display); font-stretch: 112%; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; transition: all .3s; }
+  .chips button:hover { border-color: var(--pine); } .chips button[aria-pressed="true"] { background: var(--pine); color: var(--snow); border-color: var(--pine); }
+  .list { position: relative; padding-bottom: 40px; }
+  .thead, .row { display: grid; grid-template-columns: 0 2.2fr 1.6fr .8fr .8fr .8fr; gap: 20px; align-items: center; }
+  .thead { font-family: var(--f-display); font-stretch: 112%; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; font-weight: 600; color: var(--ink-3); padding: 10px 0; border-bottom: 2px solid var(--pine); }
+  .thead span:first-child { grid-column: 2; }
+  .row { text-decoration: none; padding: 22px 0; border-bottom: 1px solid var(--line); position: relative; transition: padding .6s var(--ease-out), background .4s; }
+  .row:hover { padding-left: 18px; background: var(--fog); }
+  .thumb { display: none; }
+  .nm { font-family: var(--f-display); font-stretch: 125%; font-weight: 700; text-transform: uppercase; font-size: clamp(22px, 2.6vw, 40px); line-height: 1; letter-spacing: -.01em; }
+  .wh { font-style: italic; color: var(--ink-2); }
+  .num { font-family: var(--f-display); font-stretch: 112%; font-size: 14px; letter-spacing: .06em; font-variant-numeric: tabular-nums; }
+  .pr { font-weight: 700; } .pr .arr { display: inline-block; transition: transform .5s var(--ease-out); margin-left: 6px; color: var(--ember); } .row:hover .pr .arr { transform: translateX(6px); }
+  .preview { position: absolute; left: 0; top: 0; width: 300px; height: 380px; margin: -190px 0 0 -150px; pointer-events: none; z-index: 5; opacity: 0; transition: opacity .35s; overflow: hidden; }
+  .preview.show { opacity: 1; }
+  .preview :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.15); transition: opacity .4s, transform .9s var(--ease-out); }
+  .preview :global(img.on) { opacity: 1; transform: none; }
+  .note { padding-bottom: clamp(80px, 10vw, 140px); color: var(--ink-2); font-style: italic; }
+  @media (max-width: 900px) {
+    .thead { display: none; }
+    .row { grid-template-columns: 96px 1fr auto; grid-template-areas: "t n n" "t w p" "t a s"; gap: 4px 14px; padding: 14px 0; }
+    .row:hover { padding-left: 0; background: none; }
+    .thumb { display: block; grid-area: t; aspect-ratio: 1; } .nm { grid-area: n; font-size: 22px; } .wh { grid-area: w; font-size: 16px; }
+    .al { grid-area: a; } .sz { grid-area: s; } .pr { grid-area: p; }
+    .preview { display: none; }
+  }
+</style>

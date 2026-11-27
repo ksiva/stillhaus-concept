@@ -1,0 +1,114 @@
+---
+import { Image } from "astro:assets";
+import Base from "../../layouts/Base.astro";
+import Logo from "../../components/Logo.astro";
+import { houses, bySlug } from "../../data/houses";
+import { photo } from "../../data/photos";
+const base = import.meta.env.BASE_URL;
+const picks = ["granhus", "nattlys", "sjostuga-tyst", "huette-zwoelf"].map(bySlug);
+const steps = [
+  { k: "Arrive", t: "By train, boat or a short transfer", d: "We send door-to-door directions with your booking, and someone meets the last connection.", img: 91 },
+  { k: "Slow down", t: "Seven nights, the seventh is free", d: "A week is how long it takes to stop checking the time. The last night is on the house.", img: 49 },
+  { k: "Every evening", t: "Sauna, supper, the sky", d: "Sauna is included every day of the week, and so is the knock on the door if the aurora comes out.", img: 30 },
+];
+---
+<Base title="The Still Week" description="Seven nights, pay for six. January to March at four northern and alpine houses, sauna every evening." bare>
+  <header class="lp-top dark">
+    <div class="wrap lt"><a href={base} aria-label="Stillhaus home"><Logo /></a><a class="btn on-dark" href="#houses">Pick a house <span class="arr">↓</span></a></div>
+  </header>
+
+  <section class="lp-hero dark">
+    <div class="lp-bg" data-parallax="12"><Image src={photo(6)} alt="A lit cabin in a snowy forest at dusk" widths={[900, 1500, 2000]} sizes="100vw" loading="eager" fetchpriority="high" /></div>
+    <div class="wrap lh">
+      <p class="label" data-fade data-now>January to March · four houses</p>
+      <h1 data-lines data-now>The Still Week</h1>
+      <p class="big" data-fade data-now>Seven nights, <span class="serif-it">pay for six.</span> Sauna every evening.</p>
+      <div class="ctas" data-fade data-now><a class="btn on-dark" href="#houses">Pick a house <span class="arr">↓</span></a><p class="muted">Book by 15 December · free changes to 21 days</p></div>
+    </div>
+  </section>
+
+  <section class="steps wrap" data-steps>
+    <div class="s-img frame">
+      {steps.map((s, i) => <Image class:list={[{ on: i === 0 }]} src={photo(s.img)} alt="" widths={[700, 1100]} sizes="(max-width: 900px) 92vw, 46vw" />)}
+    </div>
+    <ol class="s-list">
+      {steps.map((s, i) => (
+        <li data-step={i} class:list={[{ on: i === 0 }]}>
+          <p class="label">{s.k}</p><h2>{s.t}</h2><p class="d">{s.d}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="houses dark" id="houses">
+    <div class="wrap">
+      <h2 data-lines>Four houses</h2>
+      <div class="hs">
+        {picks.map((h) => (
+          <article class="ho">
+            <a class="frame" href={`${base}houses/${h.slug}/`} data-cursor="Enter"><Image src={photo(h.cover)} alt={`${h.name}, ${h.area}`} widths={[500, 800]} sizes="(max-width: 900px) 92vw, 24vw" /></a>
+            <h3>{h.name}</h3>
+            <p class="muted it">{h.area}, {h.country}</p>
+            <p class="price"><s>€{h.fromEUR * 7}</s> <strong>€{h.fromEUR * 6}</strong><span>per room, 7 nights, from</span></p>
+            <a class="btn" href={`${base}houses/${h.slug}/#dates`}>Book the week <span class="arr">→</span></a>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap terms">
+    <div><p class="label">Included</p><ul><li>7 nights, breakfast daily</li><li>Sauna every evening</li><li>Arrival directions and a pickup from the last connection</li></ul></div>
+    <div><p class="label">The small print</p><ul><li>Arrivals 5 January to 22 March</li><li>One house per booking</li><li>Free date changes up to 21 days before</li></ul></div>
+  </section>
+</Base>
+
+<script>
+  import { gsap } from "gsap";
+  import { ScrollTrigger } from "gsap/ScrollTrigger";
+  gsap.registerPlugin(ScrollTrigger);
+  const sec = document.querySelector<HTMLElement>("[data-steps]");
+  if (sec) {
+    const imgs = sec.querySelectorAll(".s-img img");
+    sec.querySelectorAll<HTMLElement>("[data-step]").forEach((li) => {
+      ScrollTrigger.create({ trigger: li, start: "top 60%", end: "bottom 40%", onToggle: (st) => {
+        if (!st.isActive) return;
+        const i = li.dataset.step!;
+        imgs.forEach((im, k) => im.classList.toggle("on", String(k) === i));
+        sec.querySelectorAll("[data-step]").forEach((x) => x.classList.toggle("on", x === li));
+      } });
+    });
+  }
+</script>
+
+<style>
+  .lp-top { position: absolute; left: 0; right: 0; top: 30px; z-index: 10; background: transparent; }
+  .lt { display: flex; justify-content: space-between; align-items: center; height: 80px; } .lt .btn { padding: 12px 16px; }
+  .lp-hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; overflow: hidden; }
+  .lp-bg { position: absolute; inset: -6% 0; } .lp-bg :global(img) { width: 100%; height: 100%; object-fit: cover; }
+  .lp-hero::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(18,24,21,.6), rgba(18,24,21,.15) 40%, rgba(18,24,21,.9)); }
+  .lh { position: relative; z-index: 2; padding-bottom: clamp(40px, 7vh, 80px); } .lh .label { color: var(--ember-lt); }
+  .lh h1 { font-size: clamp(48px, 10vw, 180px); margin: 14px 0 18px; }
+  .big { font-size: clamp(24px, 2.6vw, 40px); margin: 0 0 30px; line-height: 1.2; }
+  .ctas { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; } .ctas .muted { margin: 0; font-style: italic; }
+  .steps { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 6vw, 96px); padding-top: clamp(80px, 10vw, 150px); padding-bottom: clamp(80px, 10vw, 150px); }
+  .s-img { position: sticky; top: 12vh; height: 76vh; }
+  .s-img :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transform: scale(1.08); transition: opacity .8s var(--ease), transform 1.6s var(--ease-out); }
+  .s-img :global(img.on) { opacity: 1; transform: none; }
+  .s-list { list-style: none; padding: 0; margin: 0; }
+  .s-list li { min-height: 70vh; display: flex; flex-direction: column; justify-content: center; opacity: .3; transition: opacity .6s; }
+  .s-list li.on { opacity: 1; } .s-list .label { color: var(--ember); } .s-list h2 { margin: 12px 0 18px; font-size: clamp(30px, 3.6vw, 58px); } .s-list .d { font-size: 21px; max-width: 34ch; margin: 0; }
+  .houses { padding: clamp(80px, 10vw, 140px) 0; } .houses h2 { margin-bottom: 40px; }
+  .hs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; }
+  .ho .frame { display: block; aspect-ratio: 3 / 4; margin-bottom: 16px; } .ho :global(img) { transition: transform 1.4s var(--ease-out); } .ho .frame:hover :global(img) { transform: scale(1.05); }
+  .ho .it { font-style: italic; margin: 6px 0 12px; }
+  .price { margin: 0 0 18px; } .price s { color: var(--on-dark-2); } .price strong { font-family: var(--f-display); font-stretch: 125%; font-size: 34px; color: var(--ember-lt); margin-left: 6px; } .price span { display: block; font-size: 15px; color: var(--on-dark-2); }
+  .houses .btn { --bg: var(--ember-lt); --fg: var(--pine); --hov: var(--snow); }
+  .terms { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; padding-top: clamp(64px, 8vw, 110px); padding-bottom: clamp(80px, 10vw, 140px); }
+  .terms .label { color: var(--ember); border-bottom: 2px solid var(--pine); padding-bottom: 10px; } .terms ul { padding-left: 20px; margin: 16px 0 0; }
+  @media (max-width: 900px) {
+    .steps { grid-template-columns: 1fr; } .s-img { top: 70px; height: 42vh; z-index: 2; } .s-list li { min-height: 60vh; }
+    .hs { grid-template-columns: 1fr 1fr; } .terms { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) { .hs { grid-template-columns: 1fr; } }
+</style>

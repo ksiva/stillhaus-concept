@@ -1,0 +1,33 @@
+---
+import { Image } from "astro:assets";
+import { photo } from "../data/photos";
+import type { House } from "../data/houses";
+const { house: h, eager = false, sizes = "(max-width: 900px) 86vw, 34vw" } = Astro.props as { house: House; eager?: boolean; sizes?: string };
+const base = import.meta.env.BASE_URL;
+---
+<article class="hc" data-tags={[h.range, ...h.rituals].join("|")}>
+  <a href={`${base}houses/${h.slug}/`} data-cursor="Enter" data-tilt>
+    <div class="frame ph">
+      <Image class="a" src={photo(h.cover)} alt={`${h.name}, ${h.area}`} widths={[500, 800, 1100]} sizes={sizes} loading={eager ? "eager" : "lazy"} />
+      <Image class="b" src={photo(h.gallery[1])} alt="" widths={[500, 800, 1100]} sizes={sizes} />
+      <span class="alt">{h.altitude.toLocaleString("en-GB")} m</span>
+    </div>
+    <div class="meta">
+      <h3>{h.name}</h3>
+      <p class="where">{h.area}, {h.country}</p>
+      <p class="row"><span>{h.rooms} {h.unit}</span><span>from €{h.fromEUR}</span></p>
+    </div>
+  </a>
+</article>
+<style>
+  .hc a { display: block; text-decoration: none; color: inherit; will-change: transform; }
+  .ph { aspect-ratio: 3 / 4; }
+  .ph :global(img) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .8s var(--ease), transform 1.4s var(--ease-out); }
+  .ph :global(img.b) { opacity: 0; transform: scale(1.08); }
+  a:hover .ph :global(img.b) { opacity: 1; transform: scale(1); }
+  a:hover .ph :global(img.a) { transform: scale(1.04); }
+  .alt { position: absolute; right: 12px; top: 12px; font-family: var(--f-display); font-stretch: 112%; font-size: 11.5px; font-weight: 600; letter-spacing: .12em; background: var(--snow); color: var(--pine); padding: 5px 9px; }
+  .meta { padding-top: 16px; }
+  .where { margin: 6px 0 12px; font-style: italic; }
+  .row { display: flex; justify-content: space-between; margin: 0; padding-top: 10px; border-top: 1px solid currentColor; font-family: var(--f-display); font-stretch: 112%; font-size: 12.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 600; opacity: .9; }
+</style>

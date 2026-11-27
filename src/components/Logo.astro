@@ -1,0 +1,18 @@
+---
+// Stillhaus mark: a roofline mirrored in still water.
+const { size = 30, withWord = true, class: cls = "" } = Astro.props;
+---
+<span class={`logo ${cls}`}>
+  <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square">
+    <path d="M5 15 16 6l11 9" />
+    <path d="M9 15v-1" />
+    <path d="M5 20h22" />
+    <path d="M9 24.5h14" opacity=".75" />
+    <path d="M13 28.5h6" opacity=".5" />
+  </svg>
+  {withWord && <span class="word">Stillhaus</span>}
+</span>
+<style>
+  .logo { display: inline-flex; align-items: center; gap: 12px; color: inherit; }
+  .word { font-family: var(--f-display); font-weight: 700; font-stretch: 125%; font-size: 17px; letter-spacing: .22em; text-transform: uppercase; line-height: 1; }
+</style>
