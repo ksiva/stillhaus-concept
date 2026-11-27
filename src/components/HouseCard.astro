@@ -8,8 +8,8 @@ const base = import.meta.env.BASE_URL;
 <article class="hc" data-tags={[h.range, ...h.rituals].join("|")}>
   <a href={`${base}houses/${h.slug}/`} data-cursor="Enter" data-tilt>
     <div class="frame ph">
-      <Image class="a" src={photo(h.cover)} alt={`${h.name}, ${h.area}`} widths={[500, 800, 1100]} sizes={sizes} loading={eager ? "eager" : "lazy"} />
-      <Image class="b" src={photo(h.gallery[1])} alt="" widths={[500, 800, 1100]} sizes={sizes} />
+      <Image quality={70} class="a" src={photo(h.cover)} alt={`${h.name}, ${h.area}`} widths={[500, 800, 1100]} sizes={sizes} loading={eager ? "eager" : "lazy"} />
+      <Image quality={70} class="b" src={photo(h.gallery[1])} alt="" widths={[500, 800, 1100]} sizes={sizes} />
       <span class="alt">{h.altitude.toLocaleString("en-GB")} m</span>
     </div>
     <div class="meta">

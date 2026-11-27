@@ -62,7 +62,7 @@ const stills = ads.filter((a) => a.kind !== "display");
 
   <section class="sec wrap">
     <h2 class="sh">Photography</h2>
-    <div class="photos">{[60, 29, 88, 76].map((n) => <div class="frame"><Image src={photo(n)} alt="" widths={[500, 800]} sizes="(max-width: 800px) 46vw, 24vw" /></div>)}</div>
+    <div class="photos">{[60, 29, 88, 76].map((n) => <div class="frame"><Image quality={70} src={photo(n)} alt="" widths={[500, 800]} sizes="(max-width: 800px) 46vw, 24vw" /></div>)}</div>
     <ul class="rules">
       <li><strong>Low sun, long shadows.</strong> Blue hour, first light, firelight. Never midday glare.</li>
       <li><strong>Through a window.</strong> Show the view from inside; warmth in the foreground, cold beyond.</li>
@@ -85,7 +85,7 @@ const stills = ads.filter((a) => a.kind !== "display");
   <section class="sec wrap">
     <h2 class="sh">Components</h2>
     <div class="comp">
-      <div class="btns"><a class="btn" href="#">Find dates <span class="arr">→</span></a><a class="btn line" href="#">Filter</a><a class="ulink" href="#">All 7 houses</a></div>
+      <div class="btns"><a class="btn" href={`${base}houses/nattlys/#dates`}>Find dates <span class="arr">→</span></a><a class="btn line" href={`${base}houses/?ritual=Sauna`}>Filter</a><a class="ulink" href={`${base}houses/`}>All 7 houses</a></div>
       <div class="card"><HouseCard house={houses[0]} /></div>
     </div>
   </section>
@@ -100,7 +100,7 @@ const stills = ads.filter((a) => a.kind !== "display");
     <h2 class="sh">Campaign</h2>
     <p class="lede">"The Still Week": one offer told the same way in feed, story, display and email, landing on one page.</p>
     <h3 class="sub">Paid social and email</h3>
-    <div class="stills">{stills.map((a) => <figure><img src={`${base}campaign/${a.id}.png`} alt={a.label} loading="lazy" width={a.w} height={a.h} /><figcaption>{a.label}</figcaption></figure>)}</div>
+    <div class="stills">{stills.map((a) => <figure><img src={`${base}campaign/${a.id}.jpg`} alt={a.label} loading="lazy" width={a.w} height={a.h} /><figcaption>{a.label}</figcaption></figure>)}</div>
     <h3 class="sub">Display (live HTML5, animated)</h3>
     <div class="banners">{display.map((a) => <figure><iframe src={`${base}ads/${a.id}/`} width={a.w} height={a.h} title={a.label} loading="lazy" scrolling="no"></iframe><figcaption>{a.label}</figcaption></figure>)}</div>
     <p class="note">Landing page: <a class="ulink" href={`${base}offers/the-still-week/`}>The Still Week</a> · Email: <a class="ulink" href={`${base}email/`}>Letters from the houses</a></p>

@@ -17,7 +17,7 @@ const rituals = [
 ---
 <Base over>
   <section class="win dark" data-window>
-    <div class="pane"><Image src={photo(88)} alt="A window onto snowy peaks from a warm room" widths={[900, 1500, 2000]} sizes="100vw" loading="eager" fetchpriority="high" /></div>
+    <div class="pane"><Image quality={70} src={photo(88)} alt="A window onto snowy peaks from a warm room" widths={[900, 1500, 2000]} sizes="100vw" loading="eager" fetchpriority="high" /></div>
     <div class="wrap hero-text">
       <p class="label" data-fade data-now>Seven houses · the Alps and the North</p>
       <h1 class="bigword" data-lines data-now>Quiet houses <span class="serif-it">for the</span> cold months</h1>
@@ -61,7 +61,7 @@ const rituals = [
       </ul>
     </div>
     <div class="rit-img frame">
-      {rituals.map((r, i) => <Image class:list={[{ on: i === 0 }]} src={photo(r.img)} alt="" widths={[700, 1100]} sizes="(max-width: 900px) 92vw, 44vw" />)}
+      {rituals.map((r, i) => <Image quality={70} class:list={[{ on: i === 0 }]} src={photo(r.img)} alt="" widths={[700, 1100]} sizes="(max-width: 900px) 92vw, 44vw" />)}
     </div>
   </section>
 
@@ -70,7 +70,7 @@ const rituals = [
     <div class="jr-grid">
       {stories.map((s, i) => (
         <a class:list={["st", { big: i === 0 }]} href={`${base}journal/${s.id}/`} data-cursor="Read">
-          <div class="frame" data-wipe><Image src={photo(s.data.cover)} alt="" widths={[600, 1000, 1400]} sizes={i === 0 ? "(max-width: 900px) 92vw, 60vw" : "(max-width: 900px) 92vw, 30vw"} /></div>
+          <div class="frame" data-wipe><Image quality={70} src={photo(s.data.cover)} alt="" widths={[600, 1000, 1400]} sizes={i === 0 ? "(max-width: 900px) 92vw, 60vw" : "(max-width: 900px) 92vw, 30vw"} /></div>
           <p class="label">{s.data.kicker} · {s.data.minutes} min</p>
           <h3>{s.data.title}</h3>
           <p class="muted">{s.data.dek}</p>

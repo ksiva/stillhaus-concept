@@ -23,7 +23,7 @@ const chips = ["Alps", "North", ...rituals.slice(0, 5)];
     <div class="thead" aria-hidden="true"><span>House</span><span>Where</span><span>Altitude</span><span>Size</span><span>From / night</span></div>
     {houses.map((h, i) => (
       <a class="row" href={`${base}houses/${h.slug}/`} data-pv={i} data-tags={[h.range, ...h.rituals].join("|")}>
-        <span class="thumb frame"><Image src={photo(h.cover)} alt="" widths={[300]} sizes="120px" /></span>
+        <span class="thumb frame"><Image quality={70} src={photo(h.cover)} alt="" widths={[300]} sizes="120px" /></span>
         <span class="nm">{h.name}</span>
         <span class="wh">{h.area}, {h.country}</span>
         <span class="num al">{h.altitude.toLocaleString("en-GB")} m</span>
@@ -32,7 +32,7 @@ const chips = ["Alps", "North", ...rituals.slice(0, 5)];
       </a>
     ))}
     <div class="preview" aria-hidden="true">
-      {houses.map((h) => <Image src={photo(h.gallery[1])} alt="" widths={[500]} sizes="340px" />)}
+      {houses.map((h) => <Image quality={70} src={photo(h.gallery[1])} alt="" widths={[500]} sizes="340px" />)}
     </div>
   </section>
 

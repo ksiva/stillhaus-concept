@@ -18,7 +18,7 @@ const steps = [
   </header>
 
   <section class="lp-hero dark">
-    <div class="lp-bg" data-parallax="12"><Image src={photo(6)} alt="A lit cabin in a snowy forest at dusk" widths={[900, 1500, 2000]} sizes="100vw" loading="eager" fetchpriority="high" /></div>
+    <div class="lp-bg" data-parallax="12"><Image quality={70} src={photo(6)} alt="A lit cabin in a snowy forest at dusk" widths={[900, 1500, 2000]} sizes="100vw" loading="eager" fetchpriority="high" /></div>
     <div class="wrap lh">
       <p class="label" data-fade data-now>January to March · four houses</p>
       <h1 data-lines data-now>The Still Week</h1>
@@ -29,7 +29,7 @@ const steps = [
 
   <section class="steps wrap" data-steps>
     <div class="s-img frame">
-      {steps.map((s, i) => <Image class:list={[{ on: i === 0 }]} src={photo(s.img)} alt="" widths={[700, 1100]} sizes="(max-width: 900px) 92vw, 46vw" />)}
+      {steps.map((s, i) => <Image quality={70} class:list={[{ on: i === 0 }]} src={photo(s.img)} alt="" widths={[700, 1100]} sizes="(max-width: 900px) 92vw, 46vw" />)}
     </div>
     <ol class="s-list">
       {steps.map((s, i) => (
@@ -46,7 +46,7 @@ const steps = [
       <div class="hs">
         {picks.map((h) => (
           <article class="ho">
-            <a class="frame" href={`${base}houses/${h.slug}/`} data-cursor="Enter"><Image src={photo(h.cover)} alt={`${h.name}, ${h.area}`} widths={[500, 800]} sizes="(max-width: 900px) 92vw, 24vw" /></a>
+            <a class="frame" href={`${base}houses/${h.slug}/`} data-cursor="Enter"><Image quality={70} src={photo(h.cover)} alt={`${h.name}, ${h.area}`} widths={[500, 800]} sizes="(max-width: 900px) 92vw, 24vw" /></a>
             <h3>{h.name}</h3>
             <p class="muted it">{h.area}, {h.country}</p>
             <p class="price"><s>€{h.fromEUR * 7}</s> <strong>€{h.fromEUR * 6}</strong><span>per room, 7 nights, from</span></p>
