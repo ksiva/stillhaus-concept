@@ -22,6 +22,7 @@ const rituals = [
       <p class="label" data-fade data-now>Seven houses · the Alps and the North</p>
       <h1 class="bigword" data-lines data-now>Quiet houses <span class="serif-it">for the</span> cold months</h1>
     </div>
+    <p class="cue label" aria-hidden="true">Scroll to open the window ↓</p>
     <div class="wrap after">
       <p class="lede">Small houses in the mountains and by northern water, each with a sauna, a stove and no more than twelve rooms. Every one is reachable by train or boat.</p>
       <a class="btn on-dark" href={`${base}houses/`}>See the houses <span class="arr">→</span></a>
@@ -100,6 +101,10 @@ const rituals = [
   .bigword .serif-it { font-size: .9em; }
   .after { position: absolute; left: 0; right: 0; bottom: clamp(28px, 6vh, 64px); z-index: 2; display: flex; justify-content: space-between; align-items: end; gap: 24px; flex-wrap: wrap; }
   .after .lede { margin: 0; color: var(--snow); }
+  .cue { position: absolute; left: 50%; bottom: 7%; transform: translateX(-50%); z-index: 2; color: var(--on-dark-2); animation: bob 2.4s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translate(-50%, 6px); } }
+  @media (max-width: 900px) { .cue { display: none; } }
+  :global(html:not(.js-motion)) .cue { display: none; }
   :global(html:not(.js-motion)) .pane { clip-path: none; }
   @media (max-width: 900px) { .pane { clip-path: none !important; } :global(html.js-motion) .after { opacity: 1 !important; transform: none !important; } }
 

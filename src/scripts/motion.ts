@@ -79,6 +79,7 @@ if (!reduce) {
     tl.fromTo(pane, { clipPath: "inset(26% 34% 22% 34%)" }, { clipPath: "inset(0% 0% 0% 0%)", ease: "none" }, 0);
     tl.fromTo(pane.querySelector("img"), { scale: 1.35 }, { scale: 1, ease: "none" }, 0);
     if (word) tl.fromTo(word, { yPercent: 0, opacity: 1 }, { yPercent: -40, opacity: 0, ease: "none", immediateRender: false }, 0);
+    const cue = win.querySelector(".cue"); if (cue) tl.to(cue, { opacity: 0, ease: "none", duration: 0.15 }, 0);
     tl.fromTo(win.querySelector(".after"), { opacity: 0, y: 40 }, { opacity: 1, y: 0, ease: "none" }, 0.55);
   }
 
